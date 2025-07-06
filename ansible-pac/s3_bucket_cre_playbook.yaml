@@ -1,0 +1,17 @@
+---
+- hosts : localhost
+  connection: local
+  tasks : 
+    - name: Create S3 bucket
+      amazon.aws.s3_bucket:
+        name: "{{item}}"
+        state: present
+        region: us-east-1
+      
+      loop: 
+        - my-unique-{{ 9999 | random}}
+        - another-unique-{{ 9999 | random}}
+        - yet-another-unique-{{9999 | random }}
+
+   
+

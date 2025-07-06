@@ -1,0 +1,30 @@
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: List all S3 buckets
+      amazon.aws.s3_bucket_info:
+      register: s3_buckets
+
+    - name: Show S3 buckets
+      debug:
+        var: s3_buckets.buckets
+
+    - name: Delete specific S3 buckets
+      amazon.aws.s3_bucket:
+        name: "{{ item }}"
+        state: absent
+        region: us-east-1
+      loop: "{{ s3_buckets.buckets | map(attribute='name') | list }}"
+      when: item is match('^my-unique.*') or item is match('^yet-another-unique.*')
+
+    - name: Show remaining buckets
+      amazon.aws.s3_bucket_info:
+      register: remaining_buckets
+
+    - name: Print remaining buckets
+      debug:
+        var: remaining_buckets.buckets
+
+      
